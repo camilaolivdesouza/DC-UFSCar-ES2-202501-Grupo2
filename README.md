@@ -1,3 +1,18 @@
+## Escopo do Projeto (Engenharia de Software 2 - UFSCar)
+
+Este repositório contém o código original da biblioteca `date-fns`, que será utilizado como base para o projeto da disciplina. 
+
+As funcionalidades selecionadas para análise, testes e manutenção são:
+
+- `addDays(date, amount)`
+- `eachQuarterOfInterval(interval)`
+
+Todo o trabalho (testes, issues, relatórios de cobertura, melhorias e documentação) estará focado nessas duas funções.
+
+Abaixo, segue o README original da aplicação:
+
+-------------------------------------------------------------------------------------------------------------------------------
+
 🔥️ **NEW**: [date-fns v4.0 with first-class time zone support is out!](https://blog.date-fns.org/v40-with-time-zone-support/)
 
 <img alt="date-fns" title="date-fns" src="https://raw.githubusercontent.com/date-fns/date-fns/master/docs/logotype.svg" width="150" />
