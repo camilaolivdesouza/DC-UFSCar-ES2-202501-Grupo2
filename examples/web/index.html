@@ -9,7 +9,7 @@
   </head>
   <body class="bg-light min-vh-100 d-flex flex-column align-items-center py-4">
     <header class="mb-4">
-      <h1 class="display-5 fw-bold text-primary mb-2">Exemplos de AddDays & EachQuarterOfInterval</h1>
+      <h1 class="display-5 fw-bold text-primary mb-2 text-center">Exemplos de AddDays & EachQuarterOfInterval</h1>
       <p class="text-secondary text-center mx-auto" style="max-width: 600px;">
         Demonstração das funcionalidades <span class="fw-semibold">addDays</span> e <span class="fw-semibold">eachQuarterOfInterval</span> do projeto.
       </p>
@@ -152,8 +152,12 @@ document.getElementById("eachQuarterForm").addEventListener("submit", function (
     return;
   }
 
-  const start = new Date(startStr);
-  const end = new Date(endStr);
+  // Corrigido: cria as datas como local
+  const [startYear, startMonth, startDay] = startStr.split('-').map(Number);
+  const [endYear, endMonth, endDay] = endStr.split('-').map(Number);
+  const start = new Date(startYear, startMonth - 1, startDay);
+  const end = new Date(endYear, endMonth - 1, endDay);
+
   const quarters = dateFns.eachQuarterOfInterval({ start, end });
   resultDiv.textContent = `Trimestres encontrados: ${formatQuarterList(quarters)}`;
 });
