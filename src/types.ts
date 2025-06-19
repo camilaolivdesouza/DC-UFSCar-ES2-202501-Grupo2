@@ -204,6 +204,14 @@ export interface StepOptions {
 }
 
 /**
+ * The MaxDate function options
+ */
+export interface MaxDateOptions {
+  /** The maximum number of dates to return */
+  max?: number;
+}
+
+/**
  * The week function options. Used to build function options.
  */
 export interface WeekOptions {
