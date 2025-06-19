@@ -2,13 +2,13 @@ import { normalizeInterval } from "../_lib/normalizeInterval/index.js";
 import { addQuarters } from "../addQuarters/index.js";
 import { constructFrom } from "../constructFrom/index.js";
 import { startOfQuarter } from "../startOfQuarter/index.js";
-import type { ContextOptions, Interval, StepOptions } from "../types.js";
+import type { ContextOptions, Interval, MaxDateOptions, StepOptions } from "../types.js";
 
 /**
  * The {@link eachQuarterOfInterval} function options.
  */
 export interface EachQuarterOfIntervalOptions<DateType extends Date = Date>
-  extends StepOptions,
+  extends StepOptions, MaxDateOptions,
     ContextOptions<DateType> {}
 
 /**
@@ -78,11 +78,17 @@ export function eachQuarterOfInterval<
     reversed = !reversed;
   }
 
+  let max = options?.max;
+
   const dates: EachQuarterOfIntervalResult<IntervalType, Options> = [];
 
   while (+date <= endTime) {
     dates.push(constructFrom(start, date));
     date = addQuarters(date, step);
+
+    if (max && dates.length >= max) {
+      break;
+    }
   }
 
   return reversed ? dates.reverse() : dates;
