@@ -102,17 +102,23 @@
           <!-- Exemplo EachQuarterOfInterval ALTERADO -->
           <section class="bg-white rounded shadow p-4 mb-5">
             <h2 class="h4 fw-semibold text-danger mb-3">Alterado: EachQuarterOfInterval</h2>
-            <form id="eachQuarterFormAlt" class="row g-3 align-items-end">
-              <div class="col-md-5">
-                <label for="quarter-start-alt" class="form-label">Data inicial</label>
-                <input type="date" id="quarter-start-alt" class="form-control" required>
+            <form id="eachQuarterFormAlt" >
+              <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                  <label for="quarter-start-alt" class="form-label">Data inicial</label>
+                  <input type="date" id="quarter-start-alt" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                  <label for="quarter-end-alt" class="form-label">Data final</label>
+                  <input type="date" id="quarter-end-alt" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                  <button type="submit" class="btn btn-primary w-100">Calcular</button>
+                </div>
               </div>
-              <div class="col-md-4">
-                <label for="quarter-end-alt" class="form-label">Data final</label>
-                <input type="date" id="quarter-end-alt" class="form-control" required>
-              </div>
-              <div class="col-md-3">
-                <button type="submit" class="btn btn-primary w-100">Calcular</button>
+              <div class="col-md-8 mt-3">
+                <label for="max-quarters" class="form-label">Número maximo de intervalos</label>
+                <input type="number" id="max-quarters" class="form-control" value="2" required>
               </div>
             </form>
             <div id="eachQuarterResultAlt" class="mt-4 fs-5 text-danger fw-semibold"></div>

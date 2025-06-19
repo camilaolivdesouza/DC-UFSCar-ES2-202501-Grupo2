@@ -125,14 +125,19 @@ document.getElementById("eachQuarterFormAlt").addEventListener("submit", functio
   const startStr = document.getElementById("quarter-start-alt").value;
   const endStr = document.getElementById("quarter-end-alt").value;
   const resultDiv = document.getElementById("eachQuarterResultAlt");
+  const max = parseInt(document.getElementById("max-quarters").value, 10) || undefined;
+
 
   if (!startStr || !endStr) {
     resultDiv.textContent = "Preencha todos os campos corretamente.";
     return;
   }
 
-  console.log('eachQUarterFormAlt', startStr, endStr);
+  const [startYear,startDay, startMonth] = startStr.split('-').map(Number);
+  const [endYear, endDay, endMonth] = endStr.split('-').map(Number);
+  const start = new Date(startYear, startMonth - 1, startDay);
+  const end = new Date(endYear, endMonth - 1, endDay);
 
-  const quarters = eachQuarterOfInterval({ startStr, endStr });
+  const quarters = eachQuarterOfInterval({ start, end }, { max });
   resultDiv.textContent = `Trimestres encontrados: ${formatQuarterList(quarters)}`;
 });
