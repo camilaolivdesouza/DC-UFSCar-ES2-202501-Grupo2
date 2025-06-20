@@ -247,3 +247,42 @@ describe("eachQuarterOfInterval", () => {
     });
   });
 });
+
+  describe("options.max", () => {
+    const interval = {
+      start: new Date(2023, 0, 1),
+      end: new Date(2023, 11, 31),
+    };
+
+    it("retorna no maximo N trimestres quando max e fornecido", () => {
+      const result = eachQuarterOfInterval(interval, { max: 2 });
+      expect(result).toEqual([
+        new Date(2023, 0, 1),
+        new Date(2023, 3, 1),
+      ]);
+    });
+
+    it("retorna todos os trimestres se max nao for fornecido", () => {
+      const result = eachQuarterOfInterval(interval);
+      expect(result).toEqual([
+        new Date(2023, 0, 1),
+        new Date(2023, 3, 1),
+        new Date(2023, 6, 1),
+        new Date(2023, 9, 1),
+      ]);
+    });
+
+    it("limita o retorno a quantidade correta de trimestres se max for maior que o numero real", () => {
+      const result = eachQuarterOfInterval(
+        {
+          start: new Date(2023, 0, 1),
+          end: new Date(2023, 5, 30),
+        },
+        { max: 10 }
+      );
+      expect(result).toEqual([
+        new Date(2023, 0, 1),
+        new Date(2023, 3, 1),
+      ]);
+    });
+  });
