@@ -1,4 +1,4 @@
-````markdown
+
 # 📊 Relatório de Cobertura Estrutural e Testes de Unidade da Biblioteca `date-fns`
 
 ## 1. Introdução
