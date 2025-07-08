@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Exemplos - AddDays & EachQuarterOfInterval</title>
-    <!-- Bootstrap CSS CDN -->
+        <!-- Bootstrap CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   </head>
   <body class="bg-light min-vh-100 d-flex flex-column align-items-center py-4">
@@ -17,9 +17,9 @@
 
     <main class="w-100" style="max-width: 1250px;">
       <div class="row g-4">
-        <!-- Coluna esquerda: Exemplo original -->
+      <!-- Coluna esquerda: Exemplo original -->
         <div class="col-md-6">
-          <!-- Exemplo AddDays ORIGINAL -->
+        <!-- Exemplo AddDays ORIGINAL -->
           <section class="bg-white rounded shadow p-4 mb-5">
             <h2 class="h4 fw-semibold text-primary mb-3">Exemplo: AddDays</h2>
             <form id="addDaysForm" class="row g-3 align-items-end">
@@ -45,7 +45,7 @@
               </ul>
             </div>
           </section>
-          <!-- Exemplo EachQuarterOfInterval ORIGINAL -->
+         <!-- Exemplo EachQuarterOfInterval ORIGINAL -->
           <section class="bg-white rounded shadow p-4 mb-5">
             <h2 class="h4 fw-semibold text-primary mb-3">Exemplo: EachQuarterOfInterval</h2>
             <form id="eachQuarterForm" class="row g-3 align-items-end">
@@ -73,52 +73,50 @@
         </div>
         <!-- Coluna direita: Exemplo alterado -->
         <div class="col-md-6">
-          <!-- Exemplo AddDays ALTERADO -->
+        <!-- Exemplo AddDays ALTERADO -->
           <section class="bg-white rounded shadow p-4 mb-5">
-            <h2 class="h4 fw-semibold text-danger mb-3">Alterado: AddDays</h2>
+            <h2 class="h4 fw-semibold text-danger mb-3">Alterado: AddDays (com exclusão)</h2>
             <form id="addDaysFormAlt" class="row g-3 align-items-end">
-              <div class="col-md-5">
+              <div class="col-md-6">
                 <label for="addDays-date-alt" class="form-label">Data inicial</label>
                 <input type="date" id="addDays-date-alt" class="form-control" required>
               </div>
-              <div class="col-md-4">
-                <label for="addDays-amount-alt" class="form-label">Dias a adicionar</label>
+              <div class="col-md-6">
+                <label for="addDays-amount-alt" class="form-label">Dias úteis a adicionar</label>
                 <input type="number" id="addDays-amount-alt" class="form-control" value="10" required>
               </div>
-              <div class="col-md-3">
-                <button type="submit" class="btn btn-primary w-100">Calcular</button>
+              <div class="col-12">
+                <label for="addDays-excluded-alt" class="form-label">Datas a excluir (YYYY-MM-DD, uma por linha)</label>
+                <textarea id="addDays-excluded-alt" class="form-control" rows="3" placeholder="Ex: 2024-07-25"></textarea>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-danger w-100">Calcular com Exclusão</button>
               </div>
             </form>
             <div id="addDaysResultAlt" class="mt-4 fs-5 text-danger fw-semibold"></div>
             <div class="mt-3">
-              <h3 class="fs-6 fw-semibold text-secondary mb-1">Exemplos rápidos:</h3>
+              <h3 class="fs-6 fw-semibold text-secondary mb-1">Exemplos rápidos (excluindo fins de semana e datas especiais):</h3>
               <ul class="list-unstyled text-secondary">
-                <li>01/09/2014 + 10 dias → <span class="font-monospace" id="quickAddDays1Alt"></span></li>
-                <li>25/12/2023 + 5 dias → <span class="font-monospace" id="quickAddDays2Alt"></span></li>
-                <li>15/02/2022 - 7 dias → <span class="font-monospace" id="quickAddDays3Alt"></span></li>
+                <li>01/09/2014 + 10 dias (excl. 05/09) → <span class="font-monospace" id="quickAddDays1Alt"></span></li>
+                <li>20/12/2024 + 5 dias (Natal no meio) → <span class="font-monospace" id="quickAddDays2Alt"></span></li>
+                <li>15/01/2025 - 7 dias → <span class="font-monospace" id="quickAddDays3Alt"></span></li>
               </ul>
             </div>
           </section>
           <!-- Exemplo EachQuarterOfInterval ALTERADO -->
           <section class="bg-white rounded shadow p-4 mb-5">
             <h2 class="h4 fw-semibold text-danger mb-3">Alterado: EachQuarterOfInterval</h2>
-            <form id="eachQuarterFormAlt" >
-              <div class="row g-3 align-items-end">
-                <div class="col-md-5">
-                  <label for="quarter-start-alt" class="form-label">Data inicial</label>
-                  <input type="date" id="quarter-start-alt" class="form-control" required>
-                </div>
-                <div class="col-md-4">
-                  <label for="quarter-end-alt" class="form-label">Data final</label>
-                  <input type="date" id="quarter-end-alt" class="form-control" required>
-                </div>
-                <div class="col-md-3">
-                  <button type="submit" class="btn btn-primary w-100">Calcular</button>
-                </div>
+            <form id="eachQuarterFormAlt" class="row g-3 align-items-end">
+              <div class="col-md-5">
+                <label for="quarter-start-alt" class="form-label">Data inicial</label>
+                <input type="date" id="quarter-start-alt" class="form-control" required>
               </div>
-              <div class="col-md-8 mt-3">
-                <label for="max-quarters" class="form-label">Número maximo de intervalos</label>
-                <input type="number" min="0" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 0" id="max-quarters" class="form-control" value="2" required>
+              <div class="col-md-4">
+                <label for="quarter-end-alt" class="form-label">Data final</label>
+                <input type="date" id="quarter-end-alt" class="form-control" required>
+              </div>
+              <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">Calcular</button>
               </div>
             </form>
             <div id="eachQuarterResultAlt" class="mt-4 fs-5 text-danger fw-semibold"></div>
