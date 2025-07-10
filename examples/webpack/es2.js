@@ -2,19 +2,29 @@ import { addDays, eachQuarterOfInterval } from 'date-fns';
 
 function formatDate(date) {
   if (!(date instanceof Date) || isNaN(date)) return "Data inválida";
-  // Ajuste para garantir que a data exibida não seja afetada pelo fuso horário
-  const utcDate = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-  return utcDate.toLocaleDateString("pt-BR", { timeZone: 'UTC' });
+  return date.toLocaleDateString("pt-BR");
 }
 
-// --- ADD DAYS  ---
+/**
+ * Converte uma string 'AAAA-MM-DD' do input de data para um objeto Date.
+ * Esta abordagem é mais segura que `new Date(string)` para evitar problemas de fuso horário.
+ * @param {string} dateString - A data no formato 'AAAA-MM-DD'.
+ * @returns {Date}
+ */
+function parseISODate(dateString) {
+    if (!dateString) return null;
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day);
+}
+
+// --- ADD DAYS ---
 
 // Exemplo rápido 1: 01/09/2014 + 10 dias
 const quickAddDays1 = new Date(2014, 8, 1); // Setembro (correto)
 document.getElementById("quickAddDays1").textContent = formatDate(addDays(quickAddDays1, 10));
 
 // Exemplo rápido 2: 25/12/2023 + 5 dias
-const quickAddDays2 = new Date(2023, 11, 25); //Dezembro (correto)
+const quickAddDays2 = new Date(2023, 11, 25); // Dezembro (correto)
 document.getElementById("quickAddDays2").textContent = formatDate(addDays(quickAddDays2, 5));
 
 // Exemplo rápido 3: 15/02/2022 - 7 dias
@@ -27,61 +37,65 @@ document.getElementById("addDaysForm").addEventListener("submit", function (e) {
   const dateStr = document.getElementById("addDays-date").value;
   const amount = parseInt(document.getElementById("addDays-amount").value, 10);
   const resultDiv = document.getElementById("addDaysResult");
+  
+  // Corrigido: cria a data como local
+  const date = parseISODate(dateStr);
 
   if (!dateStr || isNaN(amount)) {
     resultDiv.textContent = "Preencha todos os campos corretamente.";
     return;
   }
-  
-  // Corrigido: cria a data como local
-  const [year, day, month] = dateStr.split('-').map(Number);
-  const date = new Date(year, month - 1, day);
+
+
 
   const result = addDays(date, amount);
   resultDiv.textContent = `Resultado: ${formatDate(result)}`;
 });
 
-// --- ADD DAYS (Alterado com Exclusão) ---
-
-// Exemplo rápido 1 (Alterado): 01/09/2014 + 10 dias úteis (excl. feriado em 05/09)
-const quickAddDays1Alt_start = new Date(2014, 8, 1);
-const quickAddDays1Alt_excluded = [new Date(2014, 8, 5)];
-const result1Alt = addDays(quickAddDays1Alt_start, 10, { excludedDates: quickAddDays1Alt_excluded });
-document.getElementById("quickAddDays1Alt").textContent = formatDate(result1Alt);
-
-// Exemplo rápido 2 (Alterado): 20/12/2024 + 5 dias úteis (passando pelo Natal)
-const quickAddDays2Alt_start = new Date(2024, 11, 20); // Uma sexta-feira
-const quickAddDays2Alt_excluded = [new Date(2024, 11, 25)]; // Natal
-const result2Alt = addDays(quickAddDays2Alt_start, 5, { excludedDates: quickAddDays2Alt_excluded });
-document.getElementById("quickAddDays2Alt").textContent = formatDate(result2Alt);
-
-// Exemplo rápido 3 (Alterado): 15/01/2025 - 7 dias úteis
-const quickAddDays3Alt_start = new Date(2025, 0, 15);
-const result3Alt = addDays(quickAddDays3Alt_start, -7, { excludedDates: [] });
-document.getElementById("quickAddDays3Alt").textContent = formatDate(result3Alt);
-
 // Formulario AddDays Alternativo
+// Exemplo rápido 1 (Alterado): 01/09/2014 + 10 dias úteis
+document.getElementById("quickAddDays1Alt").textContent = formatDate(addDays(new Date('2014-09-01T00:00:00'), 10, { excludeWeekends: true }));
+// Exemplo rápido 2 (Alterado): 20/12/2024 + 5 dias úteis, pulando o feriado de Natal
+document.getElementById("quickAddDays2Alt").textContent = formatDate(addDays(new Date('2024-12-20T00:00:00'), 5, { excludeWeekends: true, excludedDates: [new Date('2024-12-25T00:00:00')] }));
+// Exemplo rápido 3 (Alterado): 15/02/2022 - 7 dias úteis
+document.getElementById("quickAddDays3Alt").textContent = formatDate(addDays(new Date('2022-02-15T00:00:00'), -7, { excludeWeekends: true }));
+
+
+// Formulário AddDays (Alterado)
 document.getElementById("addDaysFormAlt").addEventListener("submit", function (e) {
   e.preventDefault();
   const dateStr = document.getElementById("addDays-date-alt").value;
   const amount = parseInt(document.getElementById("addDays-amount-alt").value, 10);
   const resultDiv = document.getElementById("addDaysResultAlt");
 
+  // Captura os valores dos novos campos
+  const excludeWeekends = document.getElementById("addDays-exclude-weekends-alt").checked;
+  const excludedDatesStr = document.getElementById("addDays-excluded-dates-alt").value;
+
+  // Cria a data inicial
+  const date = parseISODate(dateStr);
+
   if (!dateStr || isNaN(amount)) {
     resultDiv.textContent = "Preencha todos os campos corretamente.";
     return;
   }
+  
 
-  const [year, month, day] = dateStr.split('-').map(Number);
-  const date = new Date(year, month - 1, day);
 
-  // Aqui você pode adicionar feriados ou outras datas a excluir
-  const excludedDates = [
-    new Date(2001, 11, 25), // Natal 2001
-    new Date(2001, 11, 31), // Exemplo
-  ];
+  // Processa a string de datas a serem excluídas para um array de Dates
+  const excludedDates = excludedDatesStr
+    .split('\n') 
+    .filter(line => line.trim() !== '') 
+    .map(parseISODate); 
 
-  const result = addDays(date, amount, { excludedDates });
+  // Monta o objeto de opções para a função addDays
+  const options = {
+    excludeWeekends,
+    excludedDates,
+  };
+
+  // Chama a função 'addDays' importada, passando as novas opções
+  const result = addDays(date, amount, options);
   resultDiv.textContent = `Resultado: ${formatDate(result)}`;
 });
 
@@ -118,7 +132,7 @@ document.getElementById("eachQuarterForm").addEventListener("submit", function (
     resultDiv.textContent = "Preencha todos os campos corretamente.";
     return;
   }
-  
+
   // Corrigido: cria as datas como local
   const [startYear,startDay, startMonth] = startStr.split('-').map(Number);
   const [endYear, endDay, endMonth] = endStr.split('-').map(Number);
@@ -129,7 +143,7 @@ document.getElementById("eachQuarterForm").addEventListener("submit", function (
   resultDiv.textContent = `Trimestres encontrados: ${formatQuarterList(quarters)}`;
 });
 
-  //USO DAS FUNÇÕES ALTERADAS
+//USO DAS FUNÇÕES ALTERADAS
 
 // Exemplo ALternativo 1: 06/02/2014 a 10/08/2014
 const quickQuarterAlt1 = eachQuarterOfInterval({
@@ -151,12 +165,19 @@ document.getElementById("eachQuarterFormAlt").addEventListener("submit", functio
   const startStr = document.getElementById("quarter-start-alt").value;
   const endStr = document.getElementById("quarter-end-alt").value;
   const resultDiv = document.getElementById("eachQuarterResultAlt");
+  const max = parseInt(document.getElementById("max-quarters").value, 10) || undefined;
+
 
   if (!startStr || !endStr) {
     resultDiv.textContent = "Preencha todos os campos corretamente.";
     return;
   }
 
-  const quarters = eachQuarterOfInterval({ start: startStr, end: endStr });
+  const [startYear,startDay, startMonth] = startStr.split('-').map(Number);
+  const [endYear, endDay, endMonth] = endStr.split('-').map(Number);
+  const start = new Date(startYear, startMonth - 1, startDay);
+  const end = new Date(endYear, endMonth - 1, endDay);
+
+  const quarters = eachQuarterOfInterval({ start, end }, { max });
   resultDiv.textContent = `Trimestres encontrados: ${formatQuarterList(quarters)}`;
 });
