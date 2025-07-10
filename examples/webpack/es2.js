@@ -65,7 +65,6 @@ document.getElementById("addDaysFormAlt").addEventListener("submit", function (e
   e.preventDefault();
   const dateStr = document.getElementById("addDays-date-alt").value;
   const amount = parseInt(document.getElementById("addDays-amount-alt").value, 10);
-  const excludedStr = document.getElementById("addDays-excluded-alt").value;
   const resultDiv = document.getElementById("addDaysResultAlt");
 
   if (!dateStr || isNaN(amount)) {
@@ -73,16 +72,14 @@ document.getElementById("addDaysFormAlt").addEventListener("submit", function (e
     return;
   }
 
-  // Corrigido: cria a data como local
-  const [year, day, month] = dateStr.split('-').map(Number);
+  const [year, month, day] = dateStr.split('-').map(Number);
   const date = new Date(year, month - 1, day);
-  
-  // Processa as datas a serem excluídas a partir do textarea
-  const excludedDates = excludedStr
-    .split('\n')
-    .map(s => s.trim())
-    .filter(Boolean)
-    .map(ds => new Date(`${ds}T00:00:00`));
+
+  // Aqui você pode adicionar feriados ou outras datas a excluir
+  const excludedDates = [
+    new Date(2001, 11, 25), // Natal 2001
+    new Date(2001, 11, 31), // Exemplo
+  ];
 
   const result = addDays(date, amount, { excludedDates });
   resultDiv.textContent = `Resultado: ${formatDate(result)}`;
