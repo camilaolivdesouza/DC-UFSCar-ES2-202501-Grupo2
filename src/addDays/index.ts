@@ -40,54 +40,35 @@ export interface AddDaysOptions<DateType extends Date = Date>
  * })
  * //=> Mon Sep 16 2014 00:00:00
  */
-export function addDays<
-  DateType extends Date,
-  ResultDate extends Date = DateType,
->(
-  date: DateArg<DateType>,
+export function addDays(
+  date: Date,
   amount: number,
-  options?: AddDaysOptions<ResultDate>,
-): ResultDate {
-  const _date = toDate(date, options?.in);
-  const _amount = Math.trunc(amount);
+  options?: { excludedDates?: Date[] }
+): Date {
+  const result = new Date(date);
+  const direction = amount >= 0 ? 1 : -1;
 
-  if (isNaN(_amount)) return constructFrom(options?.in || date, NaN) as ResultDate;
+  let remaining = Math.abs(amount);
 
-  // Se a quantidade for 0 ou não houver datas para excluir, usa a lógica original.
-  // Isso garante a retrocompatibilidade.
-  if (!_amount || !options?.excludedDates?.length) {
-    const newDate = toDate(date, options?.in);
-    if (!amount) return newDate; // Retorna uma nova instância se a quantidade for 0
-    newDate.setDate(newDate.getDate() + _amount);
-    return newDate;
-  }
+  const isWeekend = (d: Date): boolean => d.getDay() === 0 || d.getDay() === 6;
 
-  const newDate = toDate(date, options?.in);
-  const direction = _amount > 0 ? 1 : -1;
-  let daysAdded = 0;
+  const isExcluded = (d: Date): boolean => {
+    if (!options?.excludedDates) return false;
 
-  // Converte as datas excluídas para timestamps para facilitar a comparação
-  const excludedTimestamps = (options.excludedDates || []).map((d) =>
-    toDate(d, options?.in).getTime(),
-  );
-
-  while (daysAdded < Math.abs(_amount)) {
-    newDate.setDate(newDate.getDate() + direction);
-    const day = newDate.getDay();
-    const isWeekend = day === 0 || day === 6; // Domingo ou Sábado
-
-    // Normaliza a data para a meia-noite para comparar com as datas excluídas
-    const currentDateAtMidnight = new Date(newDate);
-    currentDateAtMidnight.setHours(0, 0, 0, 0);
-
-    const isExcluded = excludedTimestamps.some(
-      (timestamp) => timestamp === currentDateAtMidnight.getTime(),
+    return options.excludedDates.some((excluded) =>
+      excluded.toDateString() === d.toDateString()
     );
+  };
 
-    if (!isWeekend && !isExcluded) {
-      daysAdded++;
+  while (remaining > 0) {
+    result.setDate(result.getDate() + direction);
+
+    if (isWeekend(result) || isExcluded(result)) {
+      continue;
     }
+
+    remaining--;
   }
 
-  return newDate;
+  return result;
 }
