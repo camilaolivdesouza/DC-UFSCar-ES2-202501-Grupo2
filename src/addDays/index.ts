@@ -1,3 +1,4 @@
+import { addBusinessDays } from "../addBusinessDays/index.js";
 import { constructFrom } from "../constructFrom/index.js";
 import { toDate } from "../toDate/index.js";
 import type { ContextOptions, DateArg } from "../types.js";
@@ -7,11 +8,11 @@ import type { ContextOptions, DateArg } from "../types.js";
  */
 export interface AddDaysOptions<DateType extends Date = Date>
   extends ContextOptions<DateType> {
-  /** Se `true`, os sábados e domingos serão pulados no cálculo. */
-  excludeWeekends?: boolean;
-  /** Um array de datas que devem ser puladas no cálculo. */
-  excludedDates?: Array<DateArg<DateType>>;
-}
+      /** Se `true`, os sábados e domingos serão pulados no cálculo. */
+      excludeWeekends?: boolean;
+      /** Um array de datas que devem ser puladas no cálculo. */
+      excludedDates?: Array<DateArg<DateType>>;
+  }
 
 /**
  * @name addDays
@@ -36,49 +37,38 @@ export interface AddDaysOptions<DateType extends Date = Date>
  * // Add 10 days to 1 September 2014:
  * const result = addDays(new Date(2014, 8, 1), 10)
  * //=> Thu Sep 11 2014 00:00:00
- *
- * @example
- * // Add 10 business days to 1 September 2014, excluding weekends:
- * const result = addDays(new Date(2014, 8, 1), 10, { excludeWeekends: true })
- * //=> Mon Sep 15 2014 00:00:00
+ * 
  */
-export function addDays(
-  date: Date,
+export function addDays<
+  DateType extends Date,
+  ResultDate extends Date = DateType,
+>(
+  date: DateArg<DateType>,
   amount: number,
-  options?: {
-    excludeWeekends?: boolean;
-    excludedDates?: Date[];
+  options?: AddDaysOptions<ResultDate> | undefined,
+): ResultDate {
+  const _date = toDate(date, options?.in);
+  if (isNaN(amount)) return constructFrom(options?.in || date, NaN);
+
+  // If 0 days, no-op to avoid changing times in the hour before end of DST
+  if (!amount) return _date;
+
+  let extraAmounts = 0;
+
+if (options?.excludedDates && options?.excludedDates.length > 0) {
+  const excludedDates = options.excludedDates.map(d => toDate(d, options?.in));
+  let tempDate = toDate(date, options?.in);
+  for (let i = 0; i < Math.abs(amount); i++) {
+    tempDate.setDate(tempDate.getDate() + (amount > 0 ? 1 : -1));
+    if (excludedDates.some(excludedDate => excludedDate.getTime() === tempDate.getTime())) 
+      extraAmounts++;
   }
-): Date {
-  const originalDate = new Date(date);
-  const result = new Date(date);
-  const direction = amount < 0 ? -1 : 1;
+}
 
-  if (!options?.excludeWeekends && !options?.excludedDates?.length) {
-    // Modo padrão: comportamento original da date-fns
-    result.setDate(result.getDate() + amount);
-    return result;
-  }
-
-  // Modo com exclusão de fins de semana e/ou datas específicas
-  let daysAdded = 0;
-  const excludedDatesSet = new Set(
-    options?.excludedDates?.map(d => new Date(d).toDateString()) || []
-  );
-
-  while (daysAdded < Math.abs(amount)) {
-    result.setDate(result.getDate() + direction);
-    const day = result.getDay();
-    const currentDateStr = result.toDateString();
-
-    // Verifica se a data atual deve ser contada
-    const isWeekend = options?.excludeWeekends && (day === 0 || day === 6);
-    const isExcludedDate = excludedDatesSet.has(currentDateStr);
-
-    if (!isWeekend && !isExcludedDate) {
-      daysAdded++;
-    }
-  }
-
-  return result;
+if(options?.excludeWeekends) 
+    return addBusinessDays(_date, (amount + extraAmounts));
+  else
+    _date.setDate(_date.getDate() + (amount + extraAmounts));
+  
+  return _date;
 }

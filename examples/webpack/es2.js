@@ -38,15 +38,13 @@ document.getElementById("addDaysForm").addEventListener("submit", function (e) {
   const amount = parseInt(document.getElementById("addDays-amount").value, 10);
   const resultDiv = document.getElementById("addDaysResult");
   
-  // Corrigido: cria a data como local
+  // Cria a data como local
   const date = parseISODate(dateStr);
 
   if (!dateStr || isNaN(amount)) {
     resultDiv.textContent = "Preencha todos os campos corretamente.";
     return;
   }
-
-
 
   const result = addDays(date, amount);
   resultDiv.textContent = `Resultado: ${formatDate(result)}`;
@@ -79,8 +77,6 @@ document.getElementById("addDaysFormAlt").addEventListener("submit", function (e
     resultDiv.textContent = "Preencha todos os campos corretamente.";
     return;
   }
-  
-
 
   // Processa a string de datas a serem excluídas para um array de Dates
   const excludedDates = excludedDatesStr
@@ -133,11 +129,8 @@ document.getElementById("eachQuarterForm").addEventListener("submit", function (
     return;
   }
 
-  // Corrigido: cria as datas como local
-  const [startYear,startDay, startMonth] = startStr.split('-').map(Number);
-  const [endYear, endDay, endMonth] = endStr.split('-').map(Number);
-  const start = new Date(startYear, startMonth - 1, startDay);
-  const end = new Date(endYear, endMonth - 1, endDay);
+  const start =  parseISODate(startStr);
+  const end = parseISODate(endStr);
 
   const quarters = eachQuarterOfInterval({ start, end });
   resultDiv.textContent = `Trimestres encontrados: ${formatQuarterList(quarters)}`;
@@ -173,10 +166,8 @@ document.getElementById("eachQuarterFormAlt").addEventListener("submit", functio
     return;
   }
 
-  const [startYear,startDay, startMonth] = startStr.split('-').map(Number);
-  const [endYear, endDay, endMonth] = endStr.split('-').map(Number);
-  const start = new Date(startYear, startMonth - 1, startDay);
-  const end = new Date(endYear, endMonth - 1, endDay);
+  const start =  parseISODate(startStr);
+  const end = parseISODate(endStr);
 
   const quarters = eachQuarterOfInterval({ start, end }, { max });
   resultDiv.textContent = `Trimestres encontrados: ${formatQuarterList(quarters)}`;
