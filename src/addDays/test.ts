@@ -42,8 +42,8 @@ describe("addDays", () => {
   const dstOffset =
     dstTransitions.start && dstTransitions.end
       ? (dstTransitions.end.getTimezoneOffset() -
-          dstTransitions.start.getTimezoneOffset()) *
-        MINUTE
+        dstTransitions.start.getTimezoneOffset()) *
+      MINUTE
       : NaN;
 
   dstOnly(
@@ -149,5 +149,64 @@ describe("addDays", () => {
       expect(result).toBeInstanceOf(TZDate);
       assertType<assertType.Equal<TZDate, typeof result>>(true);
     });
+  });
+});
+
+describe("exclude options", () => {
+  const baseDate = new Date(2023, 0 /* Jan */, 6); // sexta‑feira, 06 Jan 2023
+
+  it("skips Saturdays and Sundays when excludeWeekends is true", () => {
+    // +1 dia útil a partir de sexta = segunda
+    const result1 = addDays(baseDate, 1, { excludeWeekends: true });
+    expect(result1).toEqual(new Date(2023, 0 /* Jan */, 9));
+
+    // +3 dias úteis a partir de sexta = quinta seguinte
+    const result2 = addDays(baseDate, 3, { excludeWeekends: true });
+    expect(result2).toEqual(new Date(2023, 0 /* Jan */, 11));
+  });
+
+  it("counts backward skipping fins de semana quando amount é negativo", () => {
+    // -1 dia útil a partir de sexta = quinta
+    const result = addDays(baseDate, -1, { excludeWeekends: true });
+    expect(result).toEqual(new Date(2023, 0 /* Jan */, 5));
+  });
+
+  it("ignores excludedDates durante cálculo", () => {
+    const baseDate = new Date(2023, 0, 6); // 6 Jan 2023
+    const holidays = [new Date(2023, 0, 9)]; // 9 Jan é feriado
+
+    // Soma 3 dias: 7, 8, 9 -> 9 é feriado, então +1 => resultado esperado: 10 Jan
+    const result = addDays(baseDate, 3, { excludedDates: holidays });
+
+    expect(result).toEqual(new Date(2023, 0, 10)); // 10 Jan 2023
+  });
+
+  it("combines excludeWeekends e excludedDates corretamente", () => {
+    const baseDate = new Date(2023, 0, 6); // 6 Jan 2023 (sexta)
+    const holidays = [new Date(2023, 0, 10)]; // 10 Jan é feriado
+
+    // addBusinessDays(6 Jan, 4 + 1) = 13 Jan
+    const result = addDays(baseDate, 4, {
+      excludeWeekends: true,
+      excludedDates: holidays,
+    });
+
+    expect(result).toEqual(new Date(2023, 0, 13)); // 13 Jan 2023
+  });
+
+  it("returns date + amount when no options provided", () => {
+    const result = addDays(baseDate, 2, {
+      excludeWeekends: false,
+      excludedDates: [],
+    });
+    expect(result).toEqual(new Date(2023, 0 /* Jan */, 8));
+  });
+
+  it("handles invalid excludedDates entries gracefully", () => {
+    const mix = [new Date(2023, 0, 7), null as any, "invalid" as any];
+    // +1 dia a partir de sexta: sem excluir fins de semana, feriado em 7Jan
+    const result = addDays(baseDate, 1, { excludedDates: mix });
+    // 6Jan +1 = 7Jan, mas 7Jan está na lista → pula para 8Jan
+    expect(result).toEqual(new Date(2023, 0 /* Jan */, 8));
   });
 });
